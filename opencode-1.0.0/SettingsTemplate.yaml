@@ -1,0 +1,7 @@
+body:
+  - type: input
+    attributes:
+      name: opencodeCommand
+      label: OpenCode command
+      description: Command to execute in the chosen directory
+      defaultValue: opencode

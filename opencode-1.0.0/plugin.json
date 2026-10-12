@@ -1,0 +1,14 @@
+{
+    "ID": "985f72b9-3b96-41a8-9bcb-07f3fe27c03b",
+    "ActionKeyword": "vc",
+    "ActionKeywords": ["vc"],
+    "Name": "opencode-1.0.0",
+    "Description": "Choose a project folder and launch OpenCode with OmniRoute",
+    "Author": "OpenCode",
+    "Version": "1.0.0",
+    "Language": "javascript",
+    "Website": "https://opencode.ai",
+    "ExecuteFileName": "main.js",
+    "IcoPath": "Images\\app.png",
+    "MinimumAppVersion": "2.0.0"
+}
