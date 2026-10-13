@@ -1,0 +1,14 @@
+{
+    "ID": "2fa3de60-ea53-4a65-9b66-299f90bfcfe8",
+    "ActionKeyword": "pf",
+    "ActionKeywords": ["pf"],
+    "Name": "Portfolio Launcher",
+    "Description": "Open your selected broker portfolio",
+    "Author": "Flow Launcher Plugins",
+    "Version": "1.0.0",
+    "Language": "javascript",
+    "Website": "https://github.com/FPeter99/Flow-Launcher-Plugins",
+    "ExecuteFileName": "main.js",
+    "IcoPath": "Images\\app.svg",
+    "MinimumAppVersion": "2.0.0"
+}

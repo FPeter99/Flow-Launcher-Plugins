@@ -1,0 +1,35 @@
+body:
+  - type: textBlock
+    attributes:
+      label: Visible brokers
+      description: Choose which broker shortcuts appear when you type pf. Use the up/down arrows in Flow Launcher to select one.
+  - type: checkbox
+    attributes:
+      name: show_lightyear
+      label: Show Lightyear
+      defaultValue: true
+  - type: checkbox
+    attributes:
+      name: show_trading212
+      label: Show Trading 212
+      defaultValue: true
+  - type: checkbox
+    attributes:
+      name: show_interactivebrokers
+      label: Show IBKR
+      defaultValue: true
+  - type: checkbox
+    attributes:
+      name: show_degiro
+      label: Show DEGIRO
+      defaultValue: true
+  - type: checkbox
+    attributes:
+      name: show_binance
+      label: Show Binance
+      defaultValue: true
+  - type: checkbox
+    attributes:
+      name: show_plus500
+      label: Show Plus500
+      defaultValue: true

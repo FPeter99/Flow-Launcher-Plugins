@@ -1,0 +1,10 @@
+{
+    "name": "flow-launcher-portfolio-launcher",
+    "version": "1.0.0",
+    "description": "Open a selected broker portfolio from Flow Launcher.",
+    "main": "main.js",
+    "private": true,
+    "engines": {
+        "node": ">=18"
+    }
+}
