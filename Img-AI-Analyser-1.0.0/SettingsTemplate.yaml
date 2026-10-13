@@ -1,0 +1,31 @@
+body:
+  - type: textBlock
+    attributes:
+      label: Visible AI services
+      description: Choose which services appear after imgai. The up and down arrows select one, and Enter opens it.
+  - type: checkbox
+    attributes:
+      name: show_copilot
+      label: Show Copilot
+      defaultValue: true
+  - type: checkbox
+    attributes:
+      name: show_gemini
+      label: Show Gemini
+      defaultValue: true
+  - type: checkbox
+    attributes:
+      name: show_claude
+      label: Show Claude
+      defaultValue: true
+  - type: checkbox
+    attributes:
+      name: show_chatgpt
+      label: Show ChatGPT
+      defaultValue: true
+  - type: input
+    attributes:
+      name: delaySeconds
+      label: Delay before paste
+      description: Seconds to wait after opening the website before pasting. Use 3-8 if the page loads slowly.
+      defaultValue: "3"

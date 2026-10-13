@@ -1,0 +1,10 @@
+{
+    "name": "flow-launcher-img-ai-analyser",
+    "version": "1.0.0",
+    "description": "Send a clipboard image and prompt to a selected AI website.",
+    "main": "main.js",
+    "private": true,
+    "engines": {
+        "node": ">=18"
+    }
+}

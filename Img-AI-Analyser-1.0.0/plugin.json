@@ -1,0 +1,14 @@
+{
+    "ID": "7c4e1a92-6b18-4d3f-9e55-1a8c0d2f6b47",
+    "ActionKeyword": "imgai",
+    "ActionKeywords": ["imgai"],
+    "Name": "Img-AI-Analyser-1.0.0",
+    "Description": "Send the clipboard image and a prompt to a selected AI website",
+    "Author": "Flow Launcher Plugins",
+    "Version": "1.0.0",
+    "Language": "javascript",
+    "Website": "https://github.com/FPeter99/Flow-Launcher-Plugins",
+    "ExecuteFileName": "main.js",
+    "IcoPath": "Images\\app.svg",
+    "MinimumAppVersion": "2.0.0"
+}
