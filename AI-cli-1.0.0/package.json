@@ -1,0 +1,10 @@
+{
+    "name": "flow-launcher-ai-cli",
+    "version": "1.0.0",
+    "description": "Browse folders and launch AI CLI with OmniRoute from Flow Launcher.",
+    "main": "main.js",
+    "private": true,
+    "engines": {
+        "node": ">=18"
+    }
+}

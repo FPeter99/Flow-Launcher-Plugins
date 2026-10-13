@@ -72,7 +72,7 @@ function getActiveActionKeyword() {
         }
     } catch (_) {}
 
-    return 'vc';
+    return 'cli';
 }
 
 function handleQuery(request) {
@@ -86,7 +86,7 @@ function handleQuery(request) {
         const results = [
             {
                 Title: 'select folder as workdir',
-                Subtitle: `Open OpenCode in ${actualFolder}`,
+                Subtitle: `Open AI CLI in ${actualFolder}`,
                 IcoPath: ICON_PATH,
                 JsonRPCAction: {
                     method: 'launch_here',
@@ -144,7 +144,7 @@ function handleQuery(request) {
     const results = [
         {
             Title: 'select folder as workdir',
-            Subtitle: `Open OpenCode in ${cleanDisplayDir}`,
+            Subtitle: `Open AI CLI in ${cleanDisplayDir}`,
             IcoPath: ICON_PATH,
             JsonRPCAction: {
                 method: 'launch_here',
