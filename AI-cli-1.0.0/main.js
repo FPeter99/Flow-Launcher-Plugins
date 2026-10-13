@@ -77,10 +77,15 @@ function getActiveActionKeyword() {
 
 function handleQuery(request) {
     const rawParam = Array.isArray(request.parameters) ? String(request.parameters[0] || '').trim() : '';
-    const query = normalizePath(rawParam);
+    let query = normalizePath(rawParam);
     const trigger = getActiveActionKeyword();
+    const startPath = normalizePath(String(request.settings?.startPath || ''));
 
     // Initial query when user just typed the trigger word
+    if (!query && startPath) {
+        query = startPath;
+    }
+
     if (!query) {
         const actualFolder = normalizePath(process.env.USERPROFILE || 'C:/');
         const results = [

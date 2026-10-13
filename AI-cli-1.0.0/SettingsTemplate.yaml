@@ -1,6 +1,12 @@
 body:
   - type: input
     attributes:
+      name: startPath
+      label: Starting folder
+      description: "Folder shown when you type the keyword without a path. Example: C:/Users/forga/sajat/"
+      defaultValue: ""
+  - type: input
+    attributes:
       name: opencodeCommand
       label: OpenCode command
       description: Command to execute in the chosen directory

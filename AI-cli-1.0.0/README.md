@@ -1,9 +1,20 @@
-# Vibecode
+# AI CLI
 
-Flow Launcher plugin to browse local drives and folders, then open OpenCode in the selected directory and start OmniRoute in a separate background PowerShell process.
+Flow Launcher plugin that browses local drives and folders, then opens OpenCode in the selected directory and starts OmniRoute in a separate hidden PowerShell process.
 
 ## Usage
 
-Type `vibecode` in Flow Launcher, browse to a folder, and choose **Launch here**.
+Type `cli` in Flow Launcher.
 
-The plugin is installed in the Flow Launcher plugins directory. Restart Flow Launcher after installing or changing `plugin.json` so it refreshes the plugin catalog.
+- With no path, it opens the starting folder from plugin settings, or your user profile if that setting is empty. Available drives are listed too.
+- Browse into a drive or folder. Partial folder names filter the current directory.
+- Choose **select folder as workdir** to launch OpenCode there.
+
+You can also type a path directly, for example `cli D:/projects/`.
+
+## Settings
+
+- **Starting folder:** folder opened when you type `cli` without a path.
+- **OpenCode command:** command setting for the visible terminal. The current launcher still starts `opencode` and `omniroute`.
+
+Restart Flow Launcher after installing the plugin or changing `plugin.json`.
