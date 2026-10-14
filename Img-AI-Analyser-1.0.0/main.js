@@ -17,12 +17,63 @@ const PROVIDERS = {
     claude: {
         name: 'Claude',
         url: 'https://claude.ai/new',
+        incognitoUrl: 'https://claude.ai/new?incognito',
     },
     chatgpt: {
         name: 'ChatGPT',
         url: 'https://chatgpt.com/',
+        incognitoUrl: 'https://chatgpt.com/?temporary-chat=true',
     },
 };
+
+function isOn(value) {
+    if (typeof value === 'boolean') return value;
+    if (typeof value === 'string') {
+        const v = value.trim().toLowerCase();
+        return v === 'true' || v === '1' || v === 'yes' || v === 'on';
+    }
+    if (typeof value === 'number') return value === 1;
+    return false;
+}
+
+function getSettingsPath() {
+    return path.join(
+        process.env.APPDATA || '',
+        'FlowLauncher',
+        'Settings',
+        'Plugins',
+        path.basename(__dirname),
+        'Settings.json',
+    );
+}
+
+function loadSettings(requestSettings) {
+    let fromFile = {};
+    const settingsPath = getSettingsPath();
+    try {
+        if (fs.existsSync(settingsPath)) {
+            fromFile = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+        }
+    } catch (_) {}
+
+    const fromRequest = requestSettings && typeof requestSettings === 'object' ? requestSettings : {};
+    const merged = { ...fromFile, ...fromRequest };
+
+    if (Object.keys(fromRequest).length > 0) {
+        try {
+            fs.writeFileSync(settingsPath, JSON.stringify(merged, null, 2), 'utf8');
+        } catch (_) {}
+    }
+
+    return merged;
+}
+
+function providerUrl(provider, settings) {
+    if (isOn((settings || {}).tryIncognito) && provider.incognitoUrl) {
+        return provider.incognitoUrl;
+    }
+    return provider.url;
+}
 
 function promptFrom(parameters) {
     return parameters
@@ -39,16 +90,18 @@ function delayFrom(settings) {
     return Math.min(20, Math.max(1, value));
 }
 
-function makeResult(id, provider, prompt) {
+function makeResult(id, provider, prompt, settings) {
+    const isIncognito = isOn(settings.tryIncognito) && Boolean(provider.incognitoUrl);
+    const url = isIncognito ? provider.incognitoUrl : provider.url;
     return {
-        Title: `Send to ${provider.name}`,
+        Title: `Send to ${provider.name}${isIncognito ? ' (incognito)' : ''}`,
         Subtitle: prompt
             ? `Paste clipboard image, then send: ${prompt}`
             : 'Paste the clipboard image',
         IcoPath: ICON_PATH,
         JsonRPCAction: {
             method: 'send_to',
-            parameters: [id, prompt],
+            parameters: [id, prompt, url],
             dontHideAfterAction: false,
             DontHideAfterAction: false,
         },
@@ -58,19 +111,24 @@ function makeResult(id, provider, prompt) {
 function handleQuery(request) {
     const parameters = Array.isArray(request.parameters) ? request.parameters : [];
     const prompt = promptFrom(parameters);
-    const settings = request.settings || {};
+    const settings = loadSettings(request.settings);
 
     return Object.entries(PROVIDERS)
         .filter(([id]) => {
             const enabled = settings[`show_${id}`];
             return enabled === undefined || (enabled !== false && enabled !== 'false');
         })
-        .map(([id, provider]) => makeResult(id, provider, prompt));
+        .map(([id, provider]) => makeResult(id, provider, prompt, settings));
 }
 
-function sendTo(providerId, prompt, settings) {
+function sendTo(providerId, prompt, settings, urlOverride) {
     const provider = PROVIDERS[String(providerId || '')];
     if (!provider) return [];
+
+    const effectiveSettings = loadSettings(settings);
+    const url = typeof urlOverride === 'string' && urlOverride.startsWith('https://')
+        ? urlOverride
+        : providerUrl(provider, effectiveSettings);
 
     const promptFile = path.join(os.tmpdir(), `imgai-${process.pid}-${Date.now()}.txt`);
     fs.writeFileSync(promptFile, String(prompt || ''), 'utf8');
@@ -93,9 +151,9 @@ function sendTo(providerId, prompt, settings) {
         windowsHide: true,
         env: {
             ...process.env,
-            IMGAI_URL: provider.url,
+            IMGAI_URL: url,
             IMGAI_PROMPT_FILE: promptFile,
-            IMGAI_DELAY: String(delayFrom(settings || {})),
+            IMGAI_DELAY: String(delayFrom(effectiveSettings)),
         },
     });
     child.unref();
@@ -113,7 +171,7 @@ function main() {
     const parameters = Array.isArray(request.parameters) ? request.parameters : [];
     const method = request.method || 'query';
     const result = method === 'send_to'
-        ? sendTo(parameters[0], parameters[1], request.settings)
+        ? sendTo(parameters[0], parameters[1], request.settings, parameters[2])
         : handleQuery(request);
 
     process.stdout.write(`${JSON.stringify({ result })}\n`);

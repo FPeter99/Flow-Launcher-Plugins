@@ -1,4 +1,10 @@
 body:
+  - type: checkbox
+    attributes:
+      name: tryIncognito
+      label: Try incognito
+      description: Claude és ChatGPT incognito/temporary chat URL-en nyílik. Copilot és Gemini változatlan.
+      defaultValue: false
   - type: textBlock
     attributes:
       label: Visible AI services
