@@ -1,0 +1,30 @@
+body:
+  - type: textBlock
+    attributes:
+      label: Visible AI services
+      description: Choose which services appear after imggen. The up and down arrows select one, and Enter opens it.
+  - type: checkbox
+    attributes:
+      name: show_chatgpt
+      label: Show ChatGPT
+      defaultValue: true
+  - type: checkbox
+    attributes:
+      name: show_grok
+      label: Show Grok
+      defaultValue: true
+  - type: checkbox
+    attributes:
+      name: show_copilot
+      label: Show Copilot
+      defaultValue: true
+  - type: checkbox
+    attributes:
+      name: show_gemini
+      label: Show Gemini
+      defaultValue: true
+  - type: checkbox
+    attributes:
+      name: show_meta
+      label: Show Meta AI
+      defaultValue: true

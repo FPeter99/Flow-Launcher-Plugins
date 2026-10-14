@@ -28,6 +28,16 @@ const PROVIDERS = {
         url: 'https://chatgpt.com/',
         incognitoUrl: 'https://chatgpt.com/?temporary-chat=true',
     },
+    meta: {
+        name: 'Meta AI',
+        keywords: ['Meta AI', 'Meta.ai'],
+        url: 'https://www.meta.ai/',
+    },
+    grok: {
+        name: 'Grok',
+        keywords: ['Grok'],
+        url: 'https://grok.com/',
+    },
 };
 
 function isOn(value) {

@@ -3,7 +3,7 @@ body:
     attributes:
       name: tryIncognito
       label: Try incognito
-      description: Claude és ChatGPT incognito/temporary chat URL-en nyílik. Copilot és Gemini változatlan.
+      description: Claude és ChatGPT incognito/temporary chat URL-en nyílik. A többinél (Copilot, Gemini, Meta AI, Grok) nincs külön URL.
       defaultValue: false
   - type: textBlock
     attributes:
@@ -28,4 +28,14 @@ body:
     attributes:
       name: show_chatgpt
       label: Show ChatGPT
+      defaultValue: true
+  - type: checkbox
+    attributes:
+      name: show_meta
+      label: Show Meta AI
+      defaultValue: true
+  - type: checkbox
+    attributes:
+      name: show_grok
+      label: Show Grok
       defaultValue: true

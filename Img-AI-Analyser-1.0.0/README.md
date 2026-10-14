@@ -5,7 +5,7 @@ Flow Launcher plugin that triggers a screenshot, then sends the captured image a
 ## Usage
 
 1. Type `imgai`, followed by the prompt. Example: `imgai mi a helyes válasz`
-2. Use the up and down arrows to choose **Send to Copilot**, **Send to Gemini**, **Send to Claude**, or **Send to ChatGPT**.
+2. Use the up and down arrows to choose **Send to Copilot**, **Send to Gemini**, **Send to Claude**, **Send to ChatGPT**, **Send to Meta AI**, or **Send to Grok**.
 3. Press Enter.
 4. Take a screenshot with the screen snip tool. If you cancel, nothing happens.
 5. Once captured, the plugin opens the selected website, automatically waits for the page to load, focuses the window, pastes the screenshot, pastes the prompt, and presses Enter.

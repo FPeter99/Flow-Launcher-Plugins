@@ -15,7 +15,6 @@ if ($promptFile -and (Test-Path -LiteralPath $promptFile)) {
 $signature = @'
 using System;
 using System.Text;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 public static class ImgAiInput {
@@ -31,28 +30,7 @@ public static class ImgAiInput {
     public static extern bool IsWindowVisible(IntPtr hWnd);
 
     [DllImport("user32.dll")]
-    public static extern bool IsIconic(IntPtr hWnd);
-
-    [DllImport("user32.dll")]
-    public static extern IntPtr GetForegroundWindow();
-
-    [DllImport("user32.dll")]
-    public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
-
-    [DllImport("user32.dll")]
-    public static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
-
-    [DllImport("user32.dll")]
     public static extern bool SetForegroundWindow(IntPtr hWnd);
-
-    [DllImport("user32.dll")]
-    public static extern bool BringWindowToTop(IntPtr hWnd);
-
-    [DllImport("user32.dll")]
-    public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-    [DllImport("kernel32.dll")]
-    public static extern uint GetCurrentThreadId();
 
     [DllImport("user32.dll")]
     public static extern void keybd_event(byte key, byte scan, uint flags, UIntPtr extra);
@@ -72,7 +50,7 @@ public static class ImgAiInput {
         keybd_event(0x2C, 0, 0, UIntPtr.Zero);
         keybd_event(0x2C, 0, 2, UIntPtr.Zero);
 
-        // Win + Shift + S (Windows Screen Snipping)
+        // Win + Shift + S
         keybd_event(0x5B, 0, 0, UIntPtr.Zero);
         keybd_event(0x10, 0, 0, UIntPtr.Zero);
         keybd_event(0x53, 0, 0, UIntPtr.Zero);
@@ -102,30 +80,6 @@ public static class ImgAiInput {
         return found;
     }
 
-    public static bool ActivateWindow(IntPtr hWnd) {
-        if (hWnd == IntPtr.Zero) return false;
-        if (IsIconic(hWnd)) {
-            ShowWindow(hWnd, 9); // SW_RESTORE
-        } else {
-            ShowWindow(hWnd, 5); // SW_SHOW
-        }
-        BringWindowToTop(hWnd);
-
-        IntPtr fgWnd = GetForegroundWindow();
-        uint pid;
-        uint fgThread = GetWindowThreadProcessId(fgWnd, out pid);
-        uint curThread = GetCurrentThreadId();
-
-        if (fgThread != curThread) {
-            AttachThreadInput(curThread, fgThread, true);
-            SetForegroundWindow(hWnd);
-            AttachThreadInput(curThread, fgThread, false);
-        } else {
-            SetForegroundWindow(hWnd);
-        }
-        return true;
-    }
-
     public static void SendCtrlV() {
         keybd_event(0x11, 0, 0, UIntPtr.Zero);
         keybd_event(0x56, 0, 0, UIntPtr.Zero);
@@ -135,6 +89,7 @@ public static class ImgAiInput {
 
     public static void SendEnter() {
         keybd_event(0x0D, 0, 0, UIntPtr.Zero);
+        System.Threading.Thread.Sleep(50);
         keybd_event(0x0D, 0, 2, UIntPtr.Zero);
     }
 }
@@ -165,8 +120,6 @@ while ($stopwatch.Elapsed.TotalSeconds -lt $timeoutSeconds) {
     if ($hostProc) {
         $snippingStarted = $true
     } elseif ($snippingStarted) {
-        # ScreenClippingHost was open and is now closed.
-        # Give a small grace period for the clipboard event to process.
         Start-Sleep -Milliseconds 400
         $currentSeq = [ImgAiInput]::GetClipboardSequenceNumber()
         if ($currentSeq -ne $initialSeq -and [ImgAiInput]::HasImage()) {
@@ -183,48 +136,50 @@ if (-not $newImageCaptured) {
 # Open the AI chat page
 Start-Process $url
 
-# Wait dynamically for the browser window to load the page title
+# Wait for the browser window to load the page title (up to 15 seconds)
 $keywords = @()
 if ($env:IMGAI_KEYWORDS) {
     $keywords = $env:IMGAI_KEYWORDS -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ }
 }
 if ($keywords.Count -eq 0) {
-    $keywords = @('ChatGPT', 'Claude', 'Gemini', 'Copilot')
+    $keywords = @('ChatGPT', 'Grok', 'Copilot', 'Gemini', 'Meta AI', 'Claude')
 }
 
-$loadTimeout = 25
+$loadTimeout = 15
 $loadWatch = [System.Diagnostics.Stopwatch]::StartNew()
 $targetHwnd = [IntPtr]::Zero
 
+# Give browser a moment to initiate the request
+Start-Sleep -Milliseconds 1200
+
 while ($loadWatch.Elapsed.TotalSeconds -lt $loadTimeout) {
-    Start-Sleep -Milliseconds 150
     $hwnd = [ImgAiInput]::FindWindowByKeywords($keywords)
     if ($hwnd -ne [IntPtr]::Zero) {
         $targetHwnd = $hwnd
         break
     }
+    Start-Sleep -Milliseconds 250
 }
 
 if ($targetHwnd -ne [IntPtr]::Zero) {
-    [ImgAiInput]::ActivateWindow($targetHwnd)
-    # Adaptive settle time: give the SPA chat UI ~700ms to mount and autofocus the input box
-    Start-Sleep -Milliseconds 700
-    [ImgAiInput]::ActivateWindow($targetHwnd)
-} else {
-    # Fallback if window title was not matched
-    Start-Sleep -Seconds 2
+    [ImgAiInput]::SetForegroundWindow($targetHwnd)
 }
 
-# Paste screenshot
-[ImgAiInput]::SendCtrlV()
-Start-Sleep -Milliseconds 600
+# Wait for the chat UI to finish initializing
+Start-Sleep -Milliseconds 1200
 
-# Paste prompt if any
+# 1. Paste screenshot
+[ImgAiInput]::SendCtrlV()
+
+# Wait for image to attach
+Start-Sleep -Milliseconds 1200
+
+# 2. Paste prompt if any
 if ($prompt.Trim()) {
     Set-Clipboard -Value $prompt
-    Start-Sleep -Milliseconds 200
+    Start-Sleep -Milliseconds 250
     [ImgAiInput]::SendCtrlV()
-    Start-Sleep -Milliseconds 300
+    Start-Sleep -Milliseconds 500
 }
 
 # Send the message

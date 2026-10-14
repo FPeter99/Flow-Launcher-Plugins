@@ -1,0 +1,7 @@
+{
+  "name": "ai-img-generator",
+  "version": "1.0.0",
+  "description": "Generate an image using AI directly from Flow Launcher with a prompt",
+  "main": "main.js",
+  "private": true
+}

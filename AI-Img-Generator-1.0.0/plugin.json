@@ -1,0 +1,14 @@
+{
+    "ID": "162a15f0-0734-4d65-8858-a90e4c155521",
+    "ActionKeyword": "imggen",
+    "ActionKeywords": ["imggen"],
+    "Name": "AI-Img-Generator-1.0.0",
+    "Description": "Generate an image using AI directly from Flow Launcher with a prompt",
+    "Author": "Flow Launcher Plugins",
+    "Version": "1.0.0",
+    "Language": "javascript",
+    "Website": "https://github.com/FPeter99/Flow-Launcher-Plugins",
+    "ExecuteFileName": "main.js",
+    "IcoPath": "Images\\app.svg",
+    "MinimumAppVersion": "2.0.0"
+}
