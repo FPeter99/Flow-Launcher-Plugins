@@ -16,6 +16,7 @@ $signature = @'
 using System;
 using System.Text;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 public static class ImgAiInput {
     public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
@@ -45,15 +46,11 @@ public static class ImgAiInput {
         return IsClipboardFormatAvailable(2) || IsClipboardFormatAvailable(8) || IsClipboardFormatAvailable(17);
     }
 
-    public static void TriggerScreenshot() {
-        // PrintScreen (VK_SNAPSHOT = 0x2C)
-        keybd_event(0x2C, 0, 0, UIntPtr.Zero);
-        keybd_event(0x2C, 0, 2, UIntPtr.Zero);
-
-        // Win + Shift + S
+    public static void TriggerWinShiftS() {
         keybd_event(0x5B, 0, 0, UIntPtr.Zero);
         keybd_event(0x10, 0, 0, UIntPtr.Zero);
         keybd_event(0x53, 0, 0, UIntPtr.Zero);
+        Thread.Sleep(30);
         keybd_event(0x53, 0, 2, UIntPtr.Zero);
         keybd_event(0x10, 0, 2, UIntPtr.Zero);
         keybd_event(0x5B, 0, 2, UIntPtr.Zero);
@@ -82,14 +79,17 @@ public static class ImgAiInput {
 
     public static void SendCtrlV() {
         keybd_event(0x11, 0, 0, UIntPtr.Zero);
+        Thread.Sleep(30);
         keybd_event(0x56, 0, 0, UIntPtr.Zero);
+        Thread.Sleep(50);
         keybd_event(0x56, 0, 2, UIntPtr.Zero);
+        Thread.Sleep(30);
         keybd_event(0x11, 0, 2, UIntPtr.Zero);
     }
 
     public static void SendEnter() {
         keybd_event(0x0D, 0, 0, UIntPtr.Zero);
-        System.Threading.Thread.Sleep(50);
+        Thread.Sleep(60);
         keybd_event(0x0D, 0, 2, UIntPtr.Zero);
     }
 }
@@ -100,7 +100,18 @@ Add-Type -TypeDefinition $signature
 Start-Sleep -Milliseconds 300
 
 $initialSeq = [ImgAiInput]::GetClipboardSequenceNumber()
-[ImgAiInput]::TriggerScreenshot()
+
+# Open the screen snipping overlay (no simulated key conflicts)
+try {
+    Start-Process "ms-screenclip:"
+} catch {
+    [ImgAiInput]::TriggerWinShiftS()
+}
+
+Start-Sleep -Milliseconds 400
+if (-not (Get-Process ScreenClippingHost -ErrorAction SilentlyContinue)) {
+    [ImgAiInput]::TriggerWinShiftS()
+}
 
 $timeoutSeconds = 60
 $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
@@ -108,7 +119,12 @@ $snippingStarted = $false
 $newImageCaptured = $false
 
 while ($stopwatch.Elapsed.TotalSeconds -lt $timeoutSeconds) {
-    Start-Sleep -Milliseconds 100
+    Start-Sleep -Milliseconds 150
+
+    $hostProc = Get-Process ScreenClippingHost -ErrorAction SilentlyContinue
+    if ($hostProc) {
+        $snippingStarted = $true
+    }
 
     $currentSeq = [ImgAiInput]::GetClipboardSequenceNumber()
     if ($currentSeq -ne $initialSeq -and [ImgAiInput]::HasImage()) {
@@ -116,10 +132,8 @@ while ($stopwatch.Elapsed.TotalSeconds -lt $timeoutSeconds) {
         break
     }
 
-    $hostProc = Get-Process ScreenClippingHost -ErrorAction SilentlyContinue
-    if ($hostProc) {
-        $snippingStarted = $true
-    } elseif ($snippingStarted) {
+    if ($snippingStarted -and -not $hostProc) {
+        # ScreenClippingHost was open and is now closed (user either captured or pressed Esc)
         Start-Sleep -Milliseconds 400
         $currentSeq = [ImgAiInput]::GetClipboardSequenceNumber()
         if ($currentSeq -ne $initialSeq -and [ImgAiInput]::HasImage()) {
