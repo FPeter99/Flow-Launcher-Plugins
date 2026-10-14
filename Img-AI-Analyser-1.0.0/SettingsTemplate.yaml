@@ -29,9 +29,3 @@ body:
       name: show_chatgpt
       label: Show ChatGPT
       defaultValue: true
-  - type: input
-    attributes:
-      name: delaySeconds
-      label: Delay before paste
-      description: Seconds to wait after opening the website before pasting. Use 3-8 if the page loads slowly.
-      defaultValue: "3"

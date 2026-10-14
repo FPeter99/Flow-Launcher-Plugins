@@ -8,19 +8,23 @@ const ICON_PATH = path.join(__dirname, 'Images', 'app.svg');
 const PROVIDERS = {
     copilot: {
         name: 'Copilot',
+        keywords: ['Copilot'],
         url: 'https://copilot.microsoft.com/',
     },
     gemini: {
         name: 'Gemini',
+        keywords: ['Gemini'],
         url: 'https://gemini.google.com/app',
     },
     claude: {
         name: 'Claude',
+        keywords: ['Claude'],
         url: 'https://claude.ai/new',
         incognitoUrl: 'https://claude.ai/new?incognito',
     },
     chatgpt: {
         name: 'ChatGPT',
+        keywords: ['ChatGPT'],
         url: 'https://chatgpt.com/',
         incognitoUrl: 'https://chatgpt.com/?temporary-chat=true',
     },
@@ -96,8 +100,8 @@ function makeResult(id, provider, prompt, settings) {
     return {
         Title: `Send to ${provider.name}${isIncognito ? ' (incognito)' : ''}`,
         Subtitle: prompt
-            ? `Paste clipboard image, then send: ${prompt}`
-            : 'Paste the clipboard image',
+            ? `Take screenshot, then send: ${prompt}`
+            : 'Take screenshot and send',
         IcoPath: ICON_PATH,
         JsonRPCAction: {
             method: 'send_to',
@@ -153,7 +157,7 @@ function sendTo(providerId, prompt, settings, urlOverride) {
             ...process.env,
             IMGAI_URL: url,
             IMGAI_PROMPT_FILE: promptFile,
-            IMGAI_DELAY: String(delayFrom(effectiveSettings)),
+            IMGAI_KEYWORDS: (provider.keywords || [provider.name]).join(','),
         },
     });
     child.unref();

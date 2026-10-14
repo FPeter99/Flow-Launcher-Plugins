@@ -3,7 +3,7 @@
     "ActionKeyword": "imgai",
     "ActionKeywords": ["imgai"],
     "Name": "Img-AI-Analyser-1.0.0",
-    "Description": "Send the clipboard image and a prompt to a selected AI website",
+    "Description": "Take a screenshot and send it with a prompt to a selected AI website",
     "Author": "Flow Launcher Plugins",
     "Version": "1.0.0",
     "Language": "javascript",
